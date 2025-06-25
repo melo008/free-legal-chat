@@ -1,12 +1,102 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>台中免費法律諮詢室</title>
-  ...
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      font-size: 16px;
+      padding: 10px;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .response {
+      margin-top: 1rem;
+      background: #fff;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 <body>
-  ...
+  <h1>台中免費法律諮詢室</h1>
+  <p>請輸入您的法律問題：</p>
+  <textarea id="userInput" placeholder="例如：我涉嫌詐欺被傳喚去地檢署怎麼辦？"></textarea>
+  <br />
+  <button onclick="askGPT()">送出諮詢</button>
+  <div id="response" class="response" style="display: none;"></div>
+
+  <script>
+    async function askGPT() {
+      const input = document.getElementById("userInput").value.trim();
+      const responseEl = document.getElementById("response");
+      if (!input) return alert("請輸入法律問題");
+
+      responseEl.style.display = "block";
+      responseEl.innerText = "⏳ 正在回覆中...";
+
+      const prompt = `你是法律助理，以下是四位律師及其專長：
+- 林律師：商標、智慧財產權
+- 劉律師：一般刑案、陪偵
+- 張律師：重大刑案
+- 曾律師：民事、家事、調解
+
+請針對以下法律問題，給出白話解釋，並從中推薦一位合適的律師：
+「${input}」`;
+
+      try {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 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"
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              {
+                role: "system",
+                content: "你是一位台中法律諮詢網站客服，只能推薦林、劉、張、曾律師，並使用親切白話回覆。"
+              },
+              {
+                role: "user",
+                content: prompt
+              }
+            ]
+          })
+        });
+
+        const data = await res.json();
+        const output = data.choices?.[0]?.message?.content || "⚠️ 無法取得回覆，請稍後再試。";
+        responseEl.innerText = output;
+      } catch (err) {
+        responseEl.innerText = "⚠️ 發生錯誤：" + err.message;
+      }
+    }
+  </script>
 </body>
 </html>
