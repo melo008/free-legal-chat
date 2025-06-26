@@ -17,9 +17,10 @@
   <p>請輸入您的法律問題：</p>
   <textarea id="userInput" placeholder="例如：我涉嫌詐欺被傳喚怎麼辦？"></textarea>
   <br />
-  <button onclick="askGPT()">送出諮詢</button>
+  <button id="submitBtn">送出諮詢</button>
   <div id="response" class="response" style="display: none;"></div>
 
+  <!-- ✅ 把 script 放在 body 最下方 -->
   <script>
     async function askGPT() {
       const input = document.getElementById("userInput").value.trim();
@@ -37,4 +38,14 @@
         });
 
         const data = await res.json();
-        responseEl.innerText = data.text ||
+        responseEl.innerText = data.text || "⚠️ 無法取得回覆";
+      } catch (err) {
+        responseEl.innerText = "❌ 發生錯誤：" + err.message;
+      }
+    }
+
+    // 正確綁定事件
+    document.getElementById("submitBtn").addEventListener("click", askGPT);
+  </script>
+</body>
+</html>
