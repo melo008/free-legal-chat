@@ -33,11 +33,9 @@ export default async function handler(req, res) {
     });
 
     const data = await openaiRes.json();
-    const reply = data.choices?.[0]?.message?.content;
-    return res.status(200).json({ text: reply || "⚠️ 沒有取得回覆" });
-
-  } catch (error) {
-    console.error("OpenAI 錯誤：", error);
+    return res.status(200).json({ text: data.choices?.[0]?.message?.content || "⚠️ 無回覆" });
+  } catch (err) {
+    console.error("OpenAI 錯誤：", err);
     return res.status(500).json({ error: "伺服器錯誤" });
   }
 }
