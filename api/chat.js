@@ -1,5 +1,12 @@
 export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
   const { message } = req.body;
+  if (!message) {
+    return res.status(400).json({ error: "No message provided" });
+  }
 
   const prompt = `你是法律助理，以下是四位律師及其專長：
 - 林律師：商標、智慧財產權
@@ -9,21 +16,28 @@ export default async function handler(req, res) {
 
 請針對以下法律問題，白話解釋並推薦律師：「${message}」`;
 
-  const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer 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"
-    },
-    body: JSON.stringify({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: "你是台中法律諮詢網站客服" },
-        { role: "user", content: prompt }
-      ]
-    })
-  });
+  try {
+    const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer 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"
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: "你是台中法律諮詢網站客服" },
+          { role: "user", content: prompt }
+        ]
+      })
+    });
 
-  const data = await openaiRes.json();
-  res.status(200).json({ text: data.choices?.[0]?.message?.content || "⚠️ 無回應" });
+    const data = await openaiRes.json();
+    const reply = data.choices?.[0]?.message?.content;
+    return res.status(200).json({ text: reply || "⚠️ 沒有取得回覆" });
+
+  } catch (error) {
+    console.error("OpenAI 錯誤：", error);
+    return res.status(500).json({ error: "伺服器錯誤" });
+  }
 }
