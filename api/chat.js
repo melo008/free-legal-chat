@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const { message } = await req.body;
+  const { message } = req.body;
 
   const prompt = `你是法律助理，以下是四位律師及其專長：
 - 林律師：商標、智慧財產權
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer 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"  // 🔁 這裡改成你的 project key
+      Authorization: "Bearer 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"
     },
     body: JSON.stringify({
       model: "gpt-3.5-turbo",
@@ -25,5 +25,5 @@ export default async function handler(req, res) {
   });
 
   const data = await openaiRes.json();
-  res.status(200).json({ text: data.choices?.[0]?.message?.content || "⚠️ 無法回覆" });
+  res.status(200).json({ text: data.choices?.[0]?.message?.content || "⚠️ 無回應" });
 }
