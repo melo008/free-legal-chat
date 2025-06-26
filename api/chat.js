@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer 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"  // 🔁 這裡改成你的 project key
+      Authorization: "Bearer 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"  // 🔁 這裡改成你的 project key
     },
     body: JSON.stringify({
       model: "gpt-3.5-turbo",
