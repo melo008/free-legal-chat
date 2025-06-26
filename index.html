@@ -69,26 +69,13 @@
 「${input}」`;
 
       try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        const res = await fetch("/api/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
+            "Authorization": "Bearer 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"
           },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {
-                role: "system",
-                content: "你是一位台中法律諮詢網站客服，只能推薦林、劉、張、曾律師，並使用親切白話回覆。"
-              },
-              {
-                role: "user",
-                content: prompt
-              }
-            ]
-          })
-        });
+         body: JSON.stringify({ message: input })
 
         const data = await res.json();
         const output = data.choices?.[0]?.message?.content || "⚠️ 無法取得回覆，請稍後再試。";
